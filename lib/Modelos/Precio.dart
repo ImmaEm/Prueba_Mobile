@@ -1,23 +1,17 @@
 class Precio {
-  final double valor;
-  final int fecha;
+  final double precio;
 
-  Precio({
-    required this.valor,
-    required this.fecha,
-  });
+  Precio({required this.precio});
 
   factory Precio.fromJson(Map<String, dynamic> json) {
     return Precio(
-      valor: json['valor'],
-      fecha: json['fecha'],
+      precio: json['precio'].toDouble(),
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'valor': valor,
-      'fecha': fecha,
+      'precio': precio,
     };
   }
 }

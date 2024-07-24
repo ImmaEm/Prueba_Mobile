@@ -69,8 +69,8 @@ class _ArticulosState extends State<Articulos> {
                               style: TextStyle(fontSize: 18)),
                           Text('Nombre: ${articulo.nombre}',
                               style: TextStyle(fontSize: 18)),
-                          /*Text('Categoria: ${articulo.categoria}',
-                              style: TextStyle(fontSize: 18)),*/
+                          Text('Categoria: ${articulo.categoriaId}',
+                              style: TextStyle(fontSize: 18)),
                           Text('Activo: ${articulo.activo}',
                               style: TextStyle(fontSize: 18)),
                           SizedBox(height: 20),
