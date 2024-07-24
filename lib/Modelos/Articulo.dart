@@ -1,39 +1,34 @@
-import 'categoria.dart';
-import 'precio.dart';
-
 class Articulo {
+  final int id;
   final String clave;
-  final Categoria categoria;
+  final String categoria;
   final String nombre;
-  final List<Precio> precios;
   final bool activo;
 
   Articulo({
+    required this.id,
     required this.clave,
     required this.categoria,
     required this.nombre,
-    required this.precios,
     this.activo = true,
   });
 
   factory Articulo.fromJson(Map<String, dynamic> json) {
     return Articulo(
+      id: json['id'],
       clave: json['clave'],
-      categoria: Categoria.fromJson(json['categoria']),
+      categoria: json['categoria'],
       nombre: json['nombre'],
-      precios: (json['precios'] as List)
-          .map((item) => Precio.fromJson(item))
-          .toList(),
       activo: json['activo'] ?? true,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
       'clave': clave,
-      'categoria': categoria.toJson(),
+      'categoria': categoria,
       'nombre': nombre,
-      'precios': precios.map((precio) => precio.toJson()).toList(),
       'activo': activo,
     };
   }

@@ -13,6 +13,7 @@ class CategoriaForm extends StatefulWidget {
 
 class _CategoriaFormState extends State<CategoriaForm> {
   final _formKey = GlobalKey<FormState>();
+  late int _id;
   late String _clave;
   late String _nombre;
   late bool _activo;
@@ -21,10 +22,12 @@ class _CategoriaFormState extends State<CategoriaForm> {
   void initState() {
     super.initState();
     if (widget.categoria != null) {
+      _id = widget.categoria!.id;
       _clave = widget.categoria!.clave;
       _nombre = widget.categoria!.nombre;
       _activo = widget.categoria!.activo;
     } else {
+      _id = 0;
       _clave = '';
       _nombre = '';
       _activo = true;
@@ -80,6 +83,7 @@ class _CategoriaFormState extends State<CategoriaForm> {
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
                     final categoria = Categoria(
+                      id: _id,
                       clave: _clave,
                       fechaCreado: DateTime.now().millisecondsSinceEpoch,
                       nombre: _nombre,
@@ -89,8 +93,8 @@ class _CategoriaFormState extends State<CategoriaForm> {
                     if (widget.categoria == null) {
                       await ApiService().createCategoria(categoria);
                     } else {
-                      await ApiService()
-                          .updateCategoria(widget.categoria!.clave, categoria);
+                      await ApiService().updateCategoria(
+                          widget.categoria!.id as int, categoria);
                     }
 
                     Navigator.pop(

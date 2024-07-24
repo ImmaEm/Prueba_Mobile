@@ -30,7 +30,7 @@ class ApiService {
     }
   }
 
-  Future<void> updateCategoria(String id, Categoria categoria) async {
+  Future<void> updateCategoria(int id, Categoria categoria) async {
     final response = await http.put(
       Uri.parse('$baseUrl/categoria/$id'),
       headers: {'Content-Type': 'application/json'},
@@ -41,33 +41,25 @@ class ApiService {
     }
   }
 
-  Future<void> deleteCategoria(String clave) async {
-    final response = await http.delete(Uri.parse('$baseUrl/categoria/$clave'));
+  Future<void> deleteCategoria(int id) async {
+    final response = await http.delete(Uri.parse('$baseUrl/categoria/$id'));
 
     if (response.statusCode == 200) {
-      // Eliminar exitoso
     } else {
       throw Exception('Failed to delete categoria: ${response.body}');
     }
   }
 
   // Articulo
-  Future<List<Articulo>> getArticulos() async {
+  Future<List<Articulo>> fetchAllArticulos() async {
     final response = await http.get(Uri.parse('$baseUrl/articulo'));
+
     if (response.statusCode == 200) {
-      List<dynamic> body = json.decode(response.body);
-      return body.map((dynamic item) => Articulo.fromJson(item)).toList();
+      final jsonResponse = jsonDecode(response.body);
+      final articulosList = jsonResponse['data'] as List<dynamic>;
+      return articulosList.map((json) => Articulo.fromJson(json)).toList();
     } else {
       throw Exception('Failed to load articulos');
-    }
-  }
-
-  Future<Articulo> getArticuloById(String id) async {
-    final response = await http.get(Uri.parse('$baseUrl/articulo/$id'));
-    if (response.statusCode == 200) {
-      return Articulo.fromJson(json.decode(response.body));
-    } else {
-      throw Exception('Failed to load articulo');
     }
   }
 
@@ -78,11 +70,11 @@ class ApiService {
       body: json.encode(articulo.toJson()),
     );
     if (response.statusCode != 200) {
-      throw Exception('Failed to create articulo');
+      throw Exception('Error al registrar el articulo');
     }
   }
 
-  Future<void> updateArticulo(String id, Articulo articulo) async {
+  Future<void> updateArticulo(int id, Articulo articulo) async {
     final response = await http.put(
       Uri.parse('$baseUrl/articulo/$id'),
       headers: {'Content-Type': 'application/json'},
@@ -93,10 +85,12 @@ class ApiService {
     }
   }
 
-  Future<void> deleteArticulo(String id) async {
+  Future<void> deleteArticulo(int id) async {
     final response = await http.delete(Uri.parse('$baseUrl/articulo/$id'));
-    if (response.statusCode != 200) {
-      throw Exception('Failed to delete articulo');
+
+    if (response.statusCode == 200) {
+    } else {
+      throw Exception('Failed to delete articulo: ${response.body}');
     }
   }
 }

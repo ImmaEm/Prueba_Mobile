@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:prueba_mobile_developer/Vistas/Categorias.dart';
+import 'package:prueba_mobile_developer/Vistas/Articulos.dart';
 
 void main() {
   runApp(const MyApp());

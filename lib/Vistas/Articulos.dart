@@ -1,39 +1,39 @@
 import 'package:flutter/material.dart';
 import 'package:prueba_mobile_developer/API/ApiServices.dart';
-import 'package:prueba_mobile_developer/Modelos/Categoria.dart';
-import 'package:prueba_mobile_developer/Vistas/Categoria.dart';
+import 'package:prueba_mobile_developer/Modelos/Articulo.dart';
+import 'package:prueba_mobile_developer/Vistas/Articulo.dart';
 
-class Categorias extends StatefulWidget {
+class Articulos extends StatefulWidget {
   @override
-  _CategoriasState createState() => _CategoriasState();
+  _ArticulosState createState() => _ArticulosState();
 }
 
-class _CategoriasState extends State<Categorias> {
-  late Future<List<Categoria>> _categoriasFuture;
+class _ArticulosState extends State<Articulos> {
+  late Future<List<Articulo>> _articulosFuture;
 
   @override
   void initState() {
     super.initState();
-    _categoriasFuture = _loadCategorias();
+    _articulosFuture = _loadArticulos();
   }
 
-  Future<List<Categoria>> _loadCategorias() async {
-    return await ApiService().fetchAllCategorias();
+  Future<List<Articulo>> _loadArticulos() async {
+    return await ApiService().fetchAllArticulos();
   }
 
-  void _refreshCategorias() {
+  void _refreshArticulos() {
     setState(() {
-      _categoriasFuture = _loadCategorias();
+      _articulosFuture = _loadArticulos();
     });
   }
 
-  Future<void> _deleteCategoria(int id) async {
+  Future<void> _deleteArticulo(int id) async {
     try {
-      await ApiService().deleteCategoria(id);
-      _refreshCategorias();
+      await ApiService().deleteArticulo(id);
+      _refreshArticulos();
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al eliminar categoría')),
+        SnackBar(content: Text('Error al eliminar el articulo')),
       );
     }
   }
@@ -42,37 +42,36 @@ class _CategoriasState extends State<Categorias> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Categorías'),
+        title: Text('Articulos'),
       ),
       body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.all(16.0),
-          child: FutureBuilder<List<Categoria>>(
-            future: _categoriasFuture,
+          child: FutureBuilder<List<Articulo>>(
+            future: _articulosFuture,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return Center(child: CircularProgressIndicator());
               } else if (snapshot.hasError) {
                 return Center(child: Text('Error: ${snapshot.error}'));
               } else if (snapshot.data == null || snapshot.data!.isEmpty) {
-                return Center(child: Text('No hay categorías disponibles'));
+                return Center(child: Text('No hay articulos disponibles'));
               } else {
-                final categorias = snapshot.data!;
+                final articulos = snapshot.data!;
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    for (var categoria in categorias)
+                    for (var articulo in articulos)
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          Text('Clave: ${categoria.clave}',
+                          Text('Clave: ${articulo.clave}',
                               style: TextStyle(fontSize: 18)),
-                          Text('Nombre: ${categoria.nombre}',
+                          Text('Nombre: ${articulo.nombre}',
                               style: TextStyle(fontSize: 18)),
-                          Text(
-                              'Fecha Creado: ${DateTime.fromMillisecondsSinceEpoch(categoria.fechaCreado)}',
-                              style: TextStyle(fontSize: 18)),
-                          Text('Activo: ${categoria.activo}',
+                          /*Text('Categoria: ${articulo.categoria}',
+                              style: TextStyle(fontSize: 18)),*/
+                          Text('Activo: ${articulo.activo}',
                               style: TextStyle(fontSize: 18)),
                           SizedBox(height: 20),
                           Row(
@@ -83,18 +82,18 @@ class _CategoriasState extends State<Categorias> {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) =>
-                                          CategoriaForm(categoria: categoria),
+                                          ArticuloForm(articulo: articulo),
                                     ),
                                   );
                                   if (result == true) {
-                                    _refreshCategorias();
+                                    _refreshArticulos();
                                   }
                                 },
                                 child: Text('Editar'),
                               ),
                               SizedBox(width: 10),
                               ElevatedButton(
-                                onPressed: () => _deleteCategoria(categoria.id),
+                                onPressed: () => _deleteArticulo(articulo.id),
                                 child: Text('Eliminar'),
                               ),
                             ],
@@ -115,11 +114,11 @@ class _CategoriasState extends State<Categorias> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => CategoriaForm(),
+              builder: (context) => ArticuloForm(),
             ),
           ).then((result) {
             if (result == true) {
-              _refreshCategorias();
+              _refreshArticulos();
             }
           });
         },
