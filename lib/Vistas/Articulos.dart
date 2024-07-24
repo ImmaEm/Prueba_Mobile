@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:prueba_mobile_developer/API/ApiServices.dart';
 import 'package:prueba_mobile_developer/Modelos/Articulo.dart';
+import 'package:prueba_mobile_developer/Modelos/Categoria.dart';
 import 'package:prueba_mobile_developer/Vistas/Articulo.dart';
 
 class Articulos extends StatefulWidget {
@@ -10,11 +11,20 @@ class Articulos extends StatefulWidget {
 
 class _ArticulosState extends State<Articulos> {
   late Future<List<Articulo>> _articulosFuture;
+  late Future<List<Categoria>> _categoriasFuture;
+  Map<int, Categoria> _categoriaMap = {};
 
   @override
   void initState() {
     super.initState();
     _articulosFuture = _loadArticulos();
+    _categoriasFuture = _loadCategorias();
+  }
+
+  Future<List<Categoria>> _loadCategorias() async {
+    List<Categoria> categorias = await ApiService().fetchAllCategorias();
+    _categoriaMap = {for (var categoria in categorias) categoria.id: categoria};
+    return categorias;
   }
 
   Future<List<Articulo>> _loadArticulos() async {
@@ -44,10 +54,19 @@ class _ArticulosState extends State<Articulos> {
       appBar: AppBar(
         title: Text('Articulos'),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.all(16.0),
-          child: FutureBuilder<List<Articulo>>(
+      body: FutureBuilder<List<Categoria>>(
+        future: _categoriasFuture,
+        builder: (context, categoriasSnapshot) {
+          if (categoriasSnapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (categoriasSnapshot.hasError) {
+            return Center(child: Text('Error: ${categoriasSnapshot.error}'));
+          } else if (categoriasSnapshot.data == null ||
+              categoriasSnapshot.data!.isEmpty) {
+            return Center(child: Text('No hay categorías disponibles'));
+          }
+
+          return FutureBuilder<List<Articulo>>(
             future: _articulosFuture,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
@@ -69,7 +88,8 @@ class _ArticulosState extends State<Articulos> {
                               style: TextStyle(fontSize: 18)),
                           Text('Nombre: ${articulo.nombre}',
                               style: TextStyle(fontSize: 18)),
-                          Text('Categoria: ${articulo.categoriaId}',
+                          Text(
+                              'Categoría: ${_categoriaMap[articulo.categoriaId]?.nombre ?? 'Desconocida'}',
                               style: TextStyle(fontSize: 18)),
                           Text('Activo: ${articulo.activo}',
                               style: TextStyle(fontSize: 18)),
@@ -105,8 +125,8 @@ class _ArticulosState extends State<Articulos> {
                 );
               }
             },
-          ),
-        ),
+          );
+        },
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),

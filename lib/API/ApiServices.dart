@@ -64,12 +64,19 @@ class ApiService {
   }
 
   Future<void> createArticulo(Articulo articulo) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/articulo'),
-      headers: {'Content-Type': 'application/json'},
-      body: json.encode(articulo.toJson()),
-    );
-    if (response.statusCode != 200) {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/articulo'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(articulo.toJson()),
+      );
+      if (response.statusCode != 200) {
+        print('Status Code: ${response.statusCode}');
+        print('Response Body: ${response.body}');
+        throw Exception('Error al registrar el articulo');
+      }
+    } catch (e) {
+      print('Exception: $e');
       throw Exception('Error al registrar el articulo');
     }
   }
